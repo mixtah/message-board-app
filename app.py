@@ -47,10 +47,14 @@ def send_static(filename):
 ###################################################################################
 
 #Home page /
-# -lists topics (with filters)
+# -lists recent topics
 # -add topic
 
-#Topic Page /<topic-id:int>
+#User page /user/<username>
+# -lists topics by user if exists
+# -add topic
+
+#Topic Page /topic/<topic-id:int>
 # -lists messages
 # -modify topic
 # -delete topic
@@ -58,19 +62,24 @@ def send_static(filename):
 # -modify message
 # -delete message
 
+
 ###################################################################################
 ### Application API Connection
 ###################################################################################
 
-#Search Topics
-#Create Topic
-#Update Topic
-#Delete Topic
+#Search  Topics GET  /topic
+#Create  Topic  POST /topic/add
+#Update  Topic  POST /topic/<topic-id:int>/update
+#Delete  Topic  POST /topic/<topic-id:int>/delete
+#Like    Topic  POST /topic/<topic-id:int>/like
+#Dislike Topic  POST /topic/<topic-id:int>/dislike
 
-#Search Messages
-#Create Message
-#Update Message
-#Delete Message
+#Search  Messages GET  /message
+#Create  Message  POST /message/add
+#Update  Message  POST /message/<message-id:int>/update
+#Delete  Message  POST /message/<message-id:int>/delete
+#Like    Message  POST /message/<message-id:int>/like
+#Dislike Message  POST /message/<message-id:int>/dislike
 
 ###################################################################################
 ### SSL 
@@ -132,7 +141,6 @@ SESSION_OPTIONS = {
     #for the purpose of this tutorial, I'm leaving it as false.
 }
 
-
 #Add Beakers Session management
 application = SessionMiddleware(app, SESSION_OPTIONS)
 
@@ -147,6 +155,9 @@ if __name__ == '__main__':
             #We're going to drop tables if they exists
             #then create them.
             #This will reset all topics and messages
+            import SQLiteAdapter
+            SQLiteAdapter.initialize_db()
+            
     
     #Here I'm deciding how I should launch the application
     #The application can be started with:
