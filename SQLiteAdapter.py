@@ -20,7 +20,7 @@ def QUERY(query,params=None):
         @return: 
     '''
     try:
-        print query % tuple(params)
+        print query.replace('?','%s') % tuple(params)
     except:
         print query
         
@@ -76,19 +76,11 @@ def initialize_db():
 if __name__ == '__main__':
     initialize_db()
     
-    conn = sqlite3.connect(DB_NAME)
-    
-    conn = conn.cursor()
-    
     print('Insert Data')
     print(QUERY('''INSERT INTO messages (username,message) VALUES (?,?)''',('myusername','<h3>mymessage</h3>')))
     
     print('Select Data')
     print(QUERY('''SELECT * FROM messages WHERE username=?''',('myusername',)))
     
-    
     print('Deleting Data')
     print(QUERY('''DELETE FROM messages WHERE username=?''',('myusername',)))
-    
-    conn.commit()
-    conn.close()
