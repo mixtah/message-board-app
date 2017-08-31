@@ -6,6 +6,7 @@ Created on 29 Aug 2017
 from datetime import datetime
 import time
 import SQLiteAdapter as db
+import Topics
 
 class Message(object):
     '''
@@ -54,13 +55,37 @@ class Message(object):
         else:
             return False
         
+    def getMessages(self):
+        return getFiltered(filters={'reply_to':self.id})
+    
+    def getTopic(self):
+        if self.topic:
+            return Topics.get(self.topic)
+        return None
+    
+    def getParentMessage(self):
+        if self.reply_to:
+            return get(self.reply_to)
+        return None
+        
+def getCount(filters={}):
+    ''' Number of messages in the database given a number of filters'''
+    keys = filters.keys()
+    values = filters.values()
+    query = 'SELECT COUNT(*) AS count FROM messages WHERE '
+    for key in keys:
+        query = query + key + '=?, '
+    query = query[:-2]
+    res = db.QUERY(query,tuple(values))
+    return res[0]['count']
+
 def get(id=None):
     ''' Gets a Message given it's id
     '''
     if id==None:
         return None
     
-    res = db.QUERY('SELECT FROM messages WHERE id=?',(id,))
+    res = db.QUERY('SELECT * FROM messages WHERE id=?',(id,))
     if len(res)>0:
         return Message(**res[0])
     else:
@@ -69,9 +94,9 @@ def get(id=None):
 def getAll(limit=-1):
     ''' Get a list of all Messages '''
     if limit>0:
-        res = db.QUERY('SELECT FROM messages LIMIT ?',(limit))
+        res = db.QUERY('SELECT * FROM messages LIMIT ?',(limit))
     else:
-        res = db.QUERY('SELECT FROM messages')
+        res = db.QUERY('SELECT * FROM messages')
     rlist = []
     for values in res:
         rlist.append(Message(**values))
@@ -82,10 +107,10 @@ def getFiltered(filters={}, limit=-1):
     
     keys = filters.keys()
     values = filters.values()
-    query = 'SELECT FROM messages WHERE '
+    query = 'SELECT * FROM messages WHERE '
     for key in keys:
         query = query + key + '=?, '
-    query = query[:-1]
+    query = query[:-2]
     if limit>0:
         res = db.QUERY(query + ' LIMIT ?',(limit))
     else:

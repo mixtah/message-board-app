@@ -6,6 +6,7 @@ Created on 29 Aug 2017
 from datetime import datetime
 import time
 import SQLiteAdapter as db
+import Messages
 
 class Topic(object):
     '''
@@ -52,6 +53,20 @@ class Topic(object):
             return True
         else:
             return False
+        
+    def getMessages(self):
+        return Messages.getFiltered(filters={'topic':self.id,'reply_to':None})
+
+def getCount(filters={}):
+    ''' Number of topics in the database given a number of filters'''
+    keys = filters.keys()
+    values = filters.values()
+    query = 'SELECT COUNT(*) AS count FROM topics WHERE '
+    for key in keys:
+        query = query + key + '=?, '
+    query = query[:-2]
+    res = db.QUERY(query,tuple(values))
+    return res[0]['count']
         
 def get(id=None):
     ''' Gets a Topic given it's id
