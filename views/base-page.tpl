@@ -1,5 +1,6 @@
 %import Topics,Messages
 %setdefault('page','home')
+%setdefault('alert','')
 <!DOCTYPE html>
 <html>
 <head>
@@ -38,6 +39,13 @@
 </nav>
 
 	<div class="container" style="margin-top:0px">
+		
+		%if len(alert)>0:
+			<div class="alert alert-warning" role="alert">
+			    <p align="center"><b>{{!alert}}</b></p>
+			</div>
+		%end
+		
     	{{!base}}
     </div>
 
