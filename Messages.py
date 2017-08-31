@@ -36,10 +36,7 @@ class Message(object):
             make it permanent.
         '''
         if self.id==None:
-            #Add
-            if self.timestamp == None or len(self.timestamp)==0:
-                self.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-                
+            #Add                
             res = db.QUERY("INSERT INTO messages (username,message,reply_to,topic,modified,likes,dislikes) VALUES (?,?,?,?,?,?,?)",
                            (self.username,self.message,self.reply_to,self.topic,self.modified,self.likes,self.dislikes))
             if res:
@@ -96,7 +93,7 @@ def get(id=None):
 def getAll(limit=-1):
     ''' Get a list of all Messages '''
     if limit>0:
-        res = db.QUERY('SELECT * FROM messages LIMIT ?',(limit))
+        res = db.QUERY('SELECT * FROM messages LIMIT ?',(limit,))
     else:
         res = db.QUERY('SELECT * FROM messages')
     rlist = []
@@ -113,8 +110,8 @@ def getFiltered(filters={}, limit=-1,order_by=None,ascending=True):
     if len(keys)>0:
         query = query + 'WHERE '
         for key in keys:
-            query = query + key + '=?, '
-        query = query[:-2]
+            query = query + key + '=? and '
+        query = query[:-4]
     if order_by:
         query = query + 'ORDER BY ? '
         if ascending:
@@ -127,10 +124,12 @@ def getFiltered(filters={}, limit=-1,order_by=None,ascending=True):
         res = db.QUERY(query + ' LIMIT ?',tuple(values))
     else:
         res = db.QUERY(query,tuple(values))
-    rlist = []
-    for values in res:
-        rlist.append(Message(**values))
-    return rlist
+    if res:
+        rlist = []
+        for values in res:
+            rlist.append(Message(**values))
+        return rlist
+    return None
 
 def delete(id=None):
     ''' Deletes a Message given it's id

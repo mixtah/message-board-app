@@ -35,10 +35,7 @@ class Topic(object):
             make it permanent.
         '''
         if self.id==None:
-            #Add
-            if self.timestamp == None or len(self.timestamp)==0:
-                self.timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-                
+            #Add                
             res = db.QUERY("INSERT INTO topics (username,subject,description,modified,likes,dislikes) VALUES (?,?,?,?,?,?)",
                            (self.username,self.subject,self.description,self.modified,self.likes,self.dislikes))
             if res:
@@ -46,7 +43,7 @@ class Topic(object):
                 return True
         else:
             #Update
-            res = db.QUERY("UPDATE topics SET username=?,subject=?,description=?,modified=?,likes=?,dislikes=? WHERE id=?)",
+            res = db.QUERY("UPDATE topics SET username=?,subject=?,description=?,modified=?,likes=?,dislikes=? WHERE id=?",
                            (self.username,self.subject,self.description,self.modified,self.likes,self.dislikes,self.id))
             
         if res:
@@ -76,7 +73,7 @@ def get(id=None):
     if id==None:
         return None
     
-    res = db.QUERY('SELECT FROM topics WHERE id=?',(id,))
+    res = db.QUERY('SELECT * FROM topics WHERE id=?',(id,))
     if len(res)>0:
         return Topic(**res[0])
     else:
@@ -85,9 +82,9 @@ def get(id=None):
 def getAll(limit=-1):
     ''' Get a list of all Topics '''
     if limit>0:
-        res = db.QUERY('SELECT FROM topics LIMIT ?',(limit))
+        res = db.QUERY('SELECT * FROM topics LIMIT ?',(limit,))
     else:
-        res = db.QUERY('SELECT FROM topics')
+        res = db.QUERY('SELECT * FROM topics')
     rlist = []
     for values in res:
         rlist.append(Topic(**values))
@@ -98,12 +95,12 @@ def getFiltered(filters={}, limit=-1,order_by=None,ascending=True):
     
     keys = filters.keys()
     values = filters.values()
-    query = 'SELECT FROM topics '
+    query = 'SELECT * FROM topics '
     if len(keys)>0:
         query = query + 'WHERE '
         for key in keys:
-            query = query + key + '=?, '
-        query = query[:-2]
+            query = query + key + '=? and '
+        query = query[:-4]
     if order_by:
         query = query + 'ORDER BY ? '
         if ascending:
@@ -116,10 +113,12 @@ def getFiltered(filters={}, limit=-1,order_by=None,ascending=True):
         res = db.QUERY(query + ' LIMIT ?',tuple(values))
     else:
         res = db.QUERY(query,tuple(values))
-    rlist = []
-    for values in res:
-        rlist.append(Topic(**values))
-    return rlist
+    if res:
+        rlist = []
+        for values in res:
+            rlist.append(Topic(**values))
+        return rlist
+    return None
 
 def delete(id=None):
     ''' Deletes a Topic given it's id '''

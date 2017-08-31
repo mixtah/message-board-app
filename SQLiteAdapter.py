@@ -50,6 +50,8 @@ def QUERY(query,params=None):
         else:
             cid = cur.lastrowid
             conn.commit()
+            if not cid:
+                return True
             return cid 
     except Exception as err:
         print "Exception: ",err

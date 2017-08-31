@@ -7,7 +7,7 @@
 	</div>
 </div>
 <div class="row">
-	<div class="col-md-12">
+	<div class="col-md-8 col-md-offset-2">
 		%include('topic-add')
 	</div>
 </div>

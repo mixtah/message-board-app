@@ -52,7 +52,7 @@ def send_static(filename):
 #Home page / + Filter pages /popular /liked /disliked
 # -lists recent topics
 # -add topic
-@bottle.route('/')
+@app.route('/')
 def home():
     session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
     
@@ -60,7 +60,7 @@ def home():
                            topics=Topics.getAll(limit=40),
                            alert=session.pop('alert',''))
 
-@bottle.route('/liked')
+@app.route('/liked')
 def liked():
     session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
     
@@ -68,7 +68,7 @@ def liked():
                            topics=Topics.getFiltered(limit=20, order_by='likes', ascending=False),
                            alert=session.pop('alert',''))
 
-@bottle.route('/disliked')
+@app.route('/disliked')
 def disliked():
     session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
     
@@ -76,7 +76,7 @@ def disliked():
                            topics=Topics.getFiltered(limit=20, order_by='dislikes', ascending=False),
                            alert=session.pop('alert',''))
 
-@bottle.route('/popular')
+@app.route('/popular')
 def popular():
     session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
     
@@ -91,7 +91,7 @@ def popular():
 #User page /user/<username>
 # -lists topics by user if exists
 
-@bottle.route('/user/<username>')
+@app.route('/user/<username>')
 def users(username=''):
     session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
     
@@ -107,7 +107,7 @@ def users(username=''):
 # -modify message
 # -delete message
 
-@bottle.route('/topic/<topic_id:int>')
+@app.route('/topic/<topic_id:int>')
 def topic(topic_id=''):
     session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
     
@@ -126,7 +126,7 @@ def topic(topic_id=''):
 #Like    Topic  POST /topic/<topic-id:int>/like
 #Dislike Topic  POST /topic/<topic-id:int>/dislike
 
-@bottle.post('/topic/add')
+@app.post('/topic/add')
 def add_topic():
     session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
     
@@ -148,7 +148,7 @@ def add_topic():
     session['alert'] = 'Failed to add Topic'
     bottle.redirect('/')
     
-@bottle.route('/topic/<topic_id:int>/like')
+@app.route('/topic/<topic_id:int>/like')
 def like_topic(topic_id=''):
     session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
     
@@ -161,7 +161,7 @@ def like_topic(topic_id=''):
     session['alert'] = "Failed to like Topic, doesn't exist"
     bottle.redirect('/')
     
-@bottle.route('/topic/<topic_id:int>/dislike')
+@app.route('/topic/<topic_id:int>/dislike')
 def dislike_topic(topic_id=''):
     session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
     
@@ -181,7 +181,7 @@ def dislike_topic(topic_id=''):
 #Like    Message  POST /message/<message-id:int>/like
 #Dislike Message  POST /message/<message-id:int>/dislike
 
-@bottle.post('/message/add')
+@app.post('/message/add')
 def add_message():
     session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
     
@@ -204,7 +204,7 @@ def add_message():
     session['alert'] = 'Failed to add Message'
     bottle.redirect('/')
 
-@bottle.route('/message/<message_id:int>/like')
+@app.route('/message/<message_id:int>/like')
 def like_message(message_id=''):
     session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
     
@@ -217,7 +217,7 @@ def like_message(message_id=''):
     session['alert'] = "Failed to like Topic, doesn't exist"
     bottle.redirect('/')
     
-@bottle.route('/message/<message_id:int>/dislike')
+@app.route('/message/<message_id:int>/dislike')
 def dislike_message(message_id=''):
     session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
     

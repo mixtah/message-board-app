@@ -6,7 +6,7 @@
 %lorumCatagory = ['people','animals','cats','nightlife','technics','food','transport']
 <div class="row">
 	%random.seed(topic.username+'topic'+str(topic.id))
-	<img class="col-md-3 img-responsive" style="display: block;margin: auto;" src="http://lorempixel.com/400/400/{{random.choice()}}/{{random.randint(0,10)}}">
+	<img class="col-md-3 img-responsive" style="display: block;margin: auto;" src="http://lorempixel.com/400/400/{{random.choice(lorumCatagory)}}/{{random.randint(0,10)}}">
 	<div class="col-md-9">
 		<table style="width:100%;">
 			<tr>
@@ -47,7 +47,7 @@
 			            <div class="col-md-2 col-sm-2 hidden-xs">
 			              <figure class="thumbnail">
 			              	%random.seed(message.username)
-			                <img class="img-responsive" src="http://lorempixel.com/400/400/{{random.choice()}}/{{random.randint(0,10)}}" />
+			                <img class="img-responsive" src="http://lorempixel.com/400/400/{{random.choice(lorumCatagory)}}/{{random.randint(0,10)}}" />
 			                <figcaption class="text-center">{{message.username}}</figcaption>
 			              </figure>
 			            </div>
@@ -93,7 +93,7 @@
 				            <div class="col-md-2 col-sm-2 col-md-offset-1 col-sm-offset-0 hidden-xs">
 				              <figure class="thumbnail">
 				              	%random.seed(reply.username)
-				                <img class="img-responsive" src="http://lorempixel.com/400/400/{{random.choice()}}/{{random.randint(0,10)}}" />
+				                <img class="img-responsive" src="http://lorempixel.com/400/400/{{random.choice(lorumCatagory)}}/{{random.randint(0,10)}}" />
 				                <figcaption class="text-center">{{reply.username}}</figcaption>
 				              </figure>
 				            </div>
@@ -129,7 +129,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title">Add Reply</h4>
+				<h4 class="modal-title">Add Comment</h4>
 			</div>
 			<div class="modal-body">
 				%include('comment-add',parent=topic)

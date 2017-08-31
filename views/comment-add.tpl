@@ -1,3 +1,4 @@
+%import Topics
 %setdefault('parent',None)
 %if parent:
 <form class="form" action="/message/add" method="POST">
@@ -34,7 +35,7 @@
 			</tr>
 		</tbody>
 	</table>
-	%if isinstance(parent,Topic):
+	%if isinstance(parent,Topics.Topic):
 		<input class="form-control" type="hidden" name="topic" value="{{parent.id}}">
 	%else:
 		%topic = parent.getTopic()

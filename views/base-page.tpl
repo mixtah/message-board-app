@@ -9,7 +9,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="A Simple Message Board">
 	<meta name="author" content="Michael Bauer">
-	<title>{{ org.app_name }}</title>
+	<title>Message Board</title>
 	<!-- CSS Styles -->
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.3/summernote.css" rel="stylesheet">
@@ -51,8 +51,8 @@
 
 	<div class="container">
 	    <footer>
-	        <h4 style="color:#656565;text-align: center;">{{Topics.getCount()}} Topics</h4>
-	        <h4 style="color:#656565;text-align: center;">{{Messages.getCount()}} Replies</h4>
+	    	<br><br>
+	        <h4 style="color:#656565;text-align: center;">Totals: {{Topics.getCount()}} Topics, {{Messages.getCount()}} Replies</h4>
 	    </footer>
 	</div>
 </body>
