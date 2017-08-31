@@ -25,11 +25,13 @@
 					<h4 style="color:#656565;text-align: center;">
 						<a href="/topic/{{topic.id}}/like" class="btn btn-success btn-sm"><i class="fa fa-thumbs-o-up"></i> Like <span class="badge">{{topic.likes}}</span></a>
 		                <a href="/topic/{{topic.id}}/dislike" class="btn btn-danger btn-sm"><i class="fa fa-thumbs-o-down"></i> Dislike <span class="badge">{{topic.dislikes}}</span></a>
-		                <a data-toggle="modal" data-target="#replyTopic" class="btn btn-default btn-sm"><i class="fa fa-reply"></i> Reply</a>
 					</h4>
 				</td>
 			</tr>
 		</table>
+		<br>
+		<h4 style="text-align:center;"><a data-toggle="modal" data-target="#replyTopic" class="btn btn-default btn"><i class="fa fa-reply"></i> Reply</a></h4>
+		
 	</div>
 </div>
 <div class="row">
