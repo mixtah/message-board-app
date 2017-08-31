@@ -105,4 +105,4 @@ ENV/
 .pydevproject
 
 # SQLite Database
-.db
+*.db
