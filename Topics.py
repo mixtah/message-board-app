@@ -93,7 +93,7 @@ def getAll(limit=-1):
         rlist.append(Topic(**values))
     return rlist
     
-def getFiltered(filters={}, limit=-1):
+def getFiltered(filters={}, limit=-1,order_by=None,ascending=True):
     ''' Get a list of filtered Topics '''
     
     keys = filters.keys()
@@ -104,8 +104,16 @@ def getFiltered(filters={}, limit=-1):
         for key in keys:
             query = query + key + '=?, '
         query = query[:-2]
+    if order_by:
+        query = query + 'ORDER BY ? '
+        if ascending:
+            query = query + "ASC "
+        else:
+            query = query + "DESC "
+        values.append(order_by)
     if limit>0:
-        res = db.QUERY(query + ' LIMIT ?',(limit))
+        values.append(limit)
+        res = db.QUERY(query + ' LIMIT ?',tuple(values))
     else:
         res = db.QUERY(query,tuple(values))
     rlist = []
