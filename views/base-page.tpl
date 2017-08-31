@@ -30,7 +30,6 @@
 			<a class="navbar-brand" href="/">Message Board</a>
 		</div>
 		<ul class="nav navbar-nav">
-			<li {{'class="active"' if page=='home' else ''}}><a href="/recent">Recent Topics</a></li>
 			<li {{'class="active"' if page=='popular' else ''}}><a href="/popular">Popular</a></li>
 			<li {{'class="active"' if page=='liked' else ''}}><a href="/liked">Most Liked</a></li>
 			<li {{'class="active"' if page=='disliked' else ''}}><a href="/disliked">Most Disliked</a></li>

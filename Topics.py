@@ -102,17 +102,20 @@ def getFiltered(filters={}, limit=-1,order_by=None,ascending=True):
             query = query + key + '=? and '
         query = query[:-4]
     if order_by:
-        query = query + 'ORDER BY ? '
+        order_by = order_by if order_by.lower() in ['id','username','subject',
+                                                    'description','modified',
+                                                    'likes','dislikes',
+                                                    'timestamp'] else 'id'
+        query = query + 'ORDER BY '+order_by
         if ascending:
-            query = query + "ASC "
+            query = query + " ASC "
         else:
-            query = query + "DESC "
-        values.append(order_by)
-    if limit>0:
-        values.append(limit)
-        res = db.QUERY(query + ' LIMIT ?',tuple(values))
-    else:
-        res = db.QUERY(query,tuple(values))
+            query = query + " DESC "
+    #if limit>0:
+    #    values.append(limit)
+    #    res = db.QUERY(query + ' LIMIT ?',tuple(values))
+    #else:
+    res = db.QUERY(query,tuple(values))
     if res:
         rlist = []
         for values in res:

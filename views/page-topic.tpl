@@ -89,35 +89,37 @@
 			        </article>
 			        %replies = message.getMessages()
 			        %if replies:
-			        	<article class="row">
-				            <div class="col-md-2 col-sm-2 col-md-offset-1 col-sm-offset-0 hidden-xs">
-				              <figure class="thumbnail">
-				              	%random.seed(reply.username)
-				                <img class="img-responsive" src="http://lorempixel.com/400/400/{{random.choice(lorumCatagory)}}/{{random.randint(0,10)}}" />
-				                <figcaption class="text-center">{{reply.username}}</figcaption>
-				              </figure>
-				            </div>
-				            <div class="col-md-9 col-sm-9">
-				              <div class="panel panel-default arrow left">
-				                <div class="panel-heading right">Reply</div>
-				                <div class="panel-body">
-				                  <header class="text-left">
-				                    <div class="comment-user"><i class="fa fa-user"></i><a href="/user/{{message.username}}"> {{reply.username}}</a></div>
-				                    <time class="comment-date" datetime="16-12-2014 01:05"><i class="fa fa-clock-o"></i> {{datetime.datetime.strptime(reply.timestamp, '%Y-%m-%d %H:%M:%S').strftime('%A, %d %B %Y')}}</time>
-				                  </header>
-				                  <div class="comment-post">
-				                    <p>
-				                    	{{!reply.message}}
-				                    </p>
-				                  </div>
-				                  <p class="text-right">
-				                  	<a href="/message/{{reply.id}}/like" class="btn btn-success btn-sm"><i class="fa fa-thumbs-o-up"></i> Like <span class="badge">{{message.likes}}</span></a>
-				                 	<a href="/message/{{reply.id}}/dislike" class="btn btn-danger btn-sm"><i class="fa fa-thumbs-o-down"></i> Dislike <span class="badge">{{message.dislikes}}</span></a>
-				                  </p>
-				                </div>
-				              </div>
-				            </div>
-				        </article>
+			        	%for reply in replies:
+				        	<article class="row">
+					            <div class="col-md-2 col-sm-2 col-md-offset-1 col-sm-offset-0 hidden-xs">
+					              <figure class="thumbnail">
+					              	%random.seed(reply.username)
+					                <img class="img-responsive" src="http://lorempixel.com/400/400/{{random.choice(lorumCatagory)}}/{{random.randint(0,10)}}" />
+					                <figcaption class="text-center">{{reply.username}}</figcaption>
+					              </figure>
+					            </div>
+					            <div class="col-md-9 col-sm-9">
+					              <div class="panel panel-default arrow left">
+					                <div class="panel-heading right">Reply</div>
+					                <div class="panel-body">
+					                  <header class="text-left">
+					                    <div class="comment-user"><i class="fa fa-user"></i><a href="/user/{{message.username}}"> {{reply.username}}</a></div>
+					                    <time class="comment-date" datetime="16-12-2014 01:05"><i class="fa fa-clock-o"></i> {{datetime.datetime.strptime(reply.timestamp, '%Y-%m-%d %H:%M:%S').strftime('%A, %d %B %Y')}}</time>
+					                  </header>
+					                  <div class="comment-post">
+					                    <p>
+					                    	{{!reply.message}}
+					                    </p>
+					                  </div>
+					                  <p class="text-right">
+					                  	<a href="/message/{{reply.id}}/like" class="btn btn-success btn-sm"><i class="fa fa-thumbs-o-up"></i> Like <span class="badge">{{reply.likes}}</span></a>
+					                 	<a href="/message/{{reply.id}}/dislike" class="btn btn-danger btn-sm"><i class="fa fa-thumbs-o-down"></i> Dislike <span class="badge">{{reply.dislikes}}</span></a>
+					                  </p>
+					                </div>
+					              </div>
+					            </div>
+					        </article>
+				        %end
 			        %end
 			    %end
 			%end

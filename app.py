@@ -80,12 +80,15 @@ def disliked():
 def popular():
     session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
     
+    results = {}
     topics = Topics.getAll()
+    for topic in topics:
+        results[topic] = Messages.getCount({'topic':topic.id})+topic.likes+topic.dislikes
     
-    #TODO: Generate 'Popular' List from number of messages
+    sortedresults = sorted(results,key=results.get, reverse=True)
     
     return bottle.template('page-home', 
-                           topics=topics,
+                           topics=sortedresults,
                            alert=session.pop('alert',''))
 
 #User page /user/<username>
@@ -187,20 +190,22 @@ def add_message():
     
     form = bottle.request.forms
     
-    required = ['username','message']
+    required = ['username','message','topic']
     for r in required:
         if not r in form or len(form.get(r))==0:
             session['alert'] = 'Failed to add Topic. Missing '+r
             bottle.redirect('/')
     
-    message = Messages.Message(username=form.get('username'),
-                         message=form.get('message'),
-                         reply_to=form.get('reply_to',None),
-                         topic=form.get('topic',None)
-                         )
-    if message.save():
-        session['alert'] = 'Successfully added Reply'
-        bottle.redirect('/message/'+str(message.id))
+    topic = Topics.get(id=int(form.get('topic')))
+    if topic:
+        message = Messages.Message(username=form.get('username'),
+                             message=form.get('message'),
+                             reply_to=form.get('reply_to',None),
+                             topic=topic.id
+                             )
+        if message.save():
+            session['alert'] = 'Successfully added Reply'
+            bottle.redirect('/topic/'+str(topic.id))
     session['alert'] = 'Failed to add Message'
     bottle.redirect('/')
 
@@ -210,11 +215,13 @@ def like_message(message_id=''):
     
     message = Messages.get(int(message_id))
     if message:
-        message.likes = message.likes + 1
-        if not message.save():
-            session['alert'] = 'Failed to like Topic'
-        bottle.redirect('/message/'+str(message.id))
-    session['alert'] = "Failed to like Topic, doesn't exist"
+        topic = message.getTopic()
+        if topic:
+            message.likes = message.likes + 1
+            if not message.save():
+                session['alert'] = 'Failed to like Message'
+            bottle.redirect('/topic/'+str(topic.id))
+    session['alert'] = "Failed to like Message, doesn't exist"
     bottle.redirect('/')
     
 @app.route('/message/<message_id:int>/dislike')
@@ -223,10 +230,12 @@ def dislike_message(message_id=''):
     
     message = Messages.get(int(message_id))
     if message:
-        message.dislikes = message.dislikes + 1
-        if not message.save():
-            session['alert'] = 'Failed to dislike Message'
-        bottle.redirect('/message/'+str(message.id))
+        topic = message.getTopic()
+        if topic:
+            message.dislikes = message.dislikes + 1
+            if not message.save():
+                session['alert'] = 'Failed to dislike Message'
+            bottle.redirect('/topic/'+str(topic.id))
     session['alert'] = "Failed to dislike Message, doesn't exist"
     bottle.redirect('/')
 

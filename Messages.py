@@ -44,7 +44,7 @@ class Message(object):
                 return True
         else:
             #Update
-            res = db.QUERY("UPDATE messages SET username=?,message=?,reply_to=?,topic=?,modified=?,likes=?,dislikes=? WHERE id=?)",
+            res = db.QUERY("UPDATE messages SET username=?,message=?,reply_to=?,topic=?,modified=?,likes=?,dislikes=? WHERE id=?",
                            (self.username,self.message,self.reply_to,self.topic,self.modified,self.likes,self.dislikes,self.id))
             
         if res:
@@ -105,19 +105,28 @@ def getFiltered(filters={}, limit=-1,order_by=None,ascending=True):
     ''' Get a list of filtered Messages '''
     
     keys = filters.keys()
-    values = filters.values()
     query = 'SELECT * FROM messages '
     if len(keys)>0:
         query = query + 'WHERE '
         for key in keys:
-            query = query + key + '=? and '
+            if filters[key] is None:
+                #Need to do something slightly special as SQLite is weird will NULLs
+                query = query + key + ' IS NULL and '
+                del filters[key]
+            else:
+                query = query + key + '=? and '
         query = query[:-4]
+    values = filters.values()
     if order_by:
-        query = query + 'ORDER BY ? '
+        order_by = order_by if order_by.lower() in ['id','username','message',
+                                                    'reply_to','topic','modified',
+                                                    'likes','dislikes',
+                                                    'timestamp'] else 'id'
+        query = query + 'ORDER BY ' + order_by
         if ascending:
-            query = query + "ASC "
+            query = query + " ASC "
         else:
-            query = query + "DESC "
+            query = query + " DESC "
         values.append(order_by)
     if limit>0:
         values.append(limit)

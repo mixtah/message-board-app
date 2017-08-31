@@ -22,7 +22,8 @@
 			</tr>
 			<tr>
 				<td colspan="2">
-					% include('summernote',name='commentadd',attr='message')
+					%extra = 'topic'+str(parent.id) if isinstance(parent,Topics.Topic) else 'msg'+str(parent.id)
+					% include('summernote',name='commentadd'+extra,attr='message')
 				</td>
 			</tr>
 			<tr>
