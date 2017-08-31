@@ -43,8 +43,8 @@
 
 	<div class="container">
 	    <footer>
-	        <h4 style="color:#656565;text-align: center;">{{}} Topics</h4>
-	        <h4 style="color:#656565;text-align: center;">{{}} Replies</h4>
+	        <h4 style="color:#656565;text-align: center;">{{Topics.getCount()}} Topics</h4>
+	        <h4 style="color:#656565;text-align: center;">{{Messages.getCount()}} Replies</h4>
 	    </footer>
 	</div>
 </body>
