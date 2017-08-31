@@ -20,6 +20,9 @@ from cherrypy import wsgiserver
 from cherrypy.wsgiserver.ssl_pyopenssl import pyOpenSSLAdapter
 from OpenSSL import SSL
 
+import Topics
+import Messages
+
 #Initialize webapp
 app = Bottle()
 
@@ -46,15 +49,57 @@ def send_static(filename):
 ### Application Main Pages
 ###################################################################################
 
-#Home page /
+#Home page / + Filter pages /popular /liked /disliked
 # -lists recent topics
 # -add topic
+@bottle.route('/')
+def home():
+    session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
+    
+    return bottle.template('page-home', 
+                           topics=Topics.getAll(limit=40),
+                           alert=session.pop('alert',''))
+
+@bottle.route('/liked')
+def liked():
+    session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
+    
+    return bottle.template('page-home', 
+                           topics=Topics.getFiltered(limit=20, order_by='likes', ascending=False),
+                           alert=session.pop('alert',''))
+
+@bottle.route('/disliked')
+def disliked():
+    session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
+    
+    return bottle.template('page-home', 
+                           topics=Topics.getFiltered(limit=20, order_by='dislikes', ascending=False),
+                           alert=session.pop('alert',''))
+
+@bottle.route('/popular')
+def popular():
+    session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
+    
+    topics = Topics.getAll()
+    
+    #TODO: Generate 'Popular' List from number of messages
+    
+    return bottle.template('page-home', 
+                           topics=topics,
+                           alert=session.pop('alert',''))
 
 #User page /user/<username>
 # -lists topics by user if exists
-# -add topic
 
-#Topic Page /topic/<topic-id:int>
+@bottle.route('/user/<username>')
+def users(username=''):
+    session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
+    
+    return bottle.template('page-user', 
+                           username=username,
+                           alert=session.pop('alert',''))
+
+#Topic Page /topic/<topic_id:int>
 # -lists messages
 # -modify topic
 # -delete topic
@@ -62,6 +107,13 @@ def send_static(filename):
 # -modify message
 # -delete message
 
+@bottle.route('/topic/<topic_id:int>')
+def topic(topic_id=''):
+    session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
+    
+    return bottle.template('page-topic', 
+                           topic=Topics.get(int(topic_id)),
+                           alert=session.pop('alert',''))
 
 ###################################################################################
 ### Application API Connection
@@ -74,12 +126,109 @@ def send_static(filename):
 #Like    Topic  POST /topic/<topic-id:int>/like
 #Dislike Topic  POST /topic/<topic-id:int>/dislike
 
+@bottle.post('/topic/add')
+def add_topic():
+    session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
+    
+    form = bottle.request.forms
+    
+    required = ['username','subject','description']
+    for r in required:
+        if not r in form or len(form.get(r))==0:
+            session['alert'] = 'Failed to add Topic. Missing '+r
+            bottle.redirect('/')
+    
+    topic = Topics.Topic(username=form.get('username'),
+                         subject=form.get('subject'),
+                         description=form.get('description')
+                         )
+    if topic.save():
+        session['alert'] = 'Successfully added Topic'
+        bottle.redirect('/topic/'+str(topic.id))
+    session['alert'] = 'Failed to add Topic'
+    bottle.redirect('/')
+    
+@bottle.route('/topic/<topic_id:int>/like')
+def like_topic(topic_id=''):
+    session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
+    
+    topic = Topics.get(int(topic_id))
+    if topic:
+        topic.likes = topic.likes + 1
+        if not topic.save():
+            session['alert'] = 'Failed to like Topic'
+        bottle.redirect('/topic/'+str(topic.id))
+    session['alert'] = "Failed to like Topic, doesn't exist"
+    bottle.redirect('/')
+    
+@bottle.route('/topic/<topic_id:int>/dislike')
+def dislike_topic(topic_id=''):
+    session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
+    
+    topic = Topics.get(int(topic_id))
+    if topic:
+        topic.dislikes = topic.dislikes + 1
+        if not topic.save():
+            session['alert'] = 'Failed to dislike Topic'
+        bottle.redirect('/topic/'+str(topic.id))
+    session['alert'] = "Failed to dislike Topic, doesn't exist"
+    bottle.redirect('/')
+
 #Search  Messages GET  /message
 #Create  Message  POST /message/add
 #Update  Message  POST /message/<message-id:int>/update
 #Delete  Message  POST /message/<message-id:int>/delete
 #Like    Message  POST /message/<message-id:int>/like
 #Dislike Message  POST /message/<message-id:int>/dislike
+
+@bottle.post('/message/add')
+def add_message():
+    session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
+    
+    form = bottle.request.forms
+    
+    required = ['username','message']
+    for r in required:
+        if not r in form or len(form.get(r))==0:
+            session['alert'] = 'Failed to add Topic. Missing '+r
+            bottle.redirect('/')
+    
+    message = Messages.Message(username=form.get('username'),
+                         message=form.get('message'),
+                         reply_to=form.get('reply_to',None),
+                         topic=form.get('topic',None)
+                         )
+    if message.save():
+        session['alert'] = 'Successfully added Reply'
+        bottle.redirect('/message/'+str(message.id))
+    session['alert'] = 'Failed to add Message'
+    bottle.redirect('/')
+
+@bottle.route('/message/<message_id:int>/like')
+def like_message(message_id=''):
+    session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
+    
+    message = Messages.get(int(message_id))
+    if message:
+        message.likes = message.likes + 1
+        if not message.save():
+            session['alert'] = 'Failed to like Topic'
+        bottle.redirect('/message/'+str(message.id))
+    session['alert'] = "Failed to like Topic, doesn't exist"
+    bottle.redirect('/')
+    
+@bottle.route('/message/<message_id:int>/dislike')
+def dislike_message(message_id=''):
+    session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
+    
+    message = Messages.get(int(message_id))
+    if message:
+        message.dislikes = message.dislikes + 1
+        if not message.save():
+            session['alert'] = 'Failed to dislike Message'
+        bottle.redirect('/message/'+str(message.id))
+    session['alert'] = "Failed to dislike Message, doesn't exist"
+    bottle.redirect('/')
 
 ###################################################################################
 ### SSL 
@@ -129,6 +278,7 @@ class SSLCherryPyServer(bottle.ServerAdapter):
 
 #Initialize session details
 SESSION_OPTIONS = {
+    'session.auto': True,
     'session.cookie_expires': False,
     #This is a security risk if this is false as it means that if 
     #anyone gets access to your session cookie or just uses your
