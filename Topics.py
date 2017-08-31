@@ -65,7 +65,9 @@ def getCount(filters={}):
             query = query + key + '=?, '
         query = query[:-2]
     res = db.QUERY(query,tuple(values))
-    return res[0]['count']
+    if res:
+        return res[0]['count']
+    return 0
         
 def get(id=None):
     ''' Gets a Topic given it's id
@@ -74,7 +76,7 @@ def get(id=None):
         return None
     
     res = db.QUERY('SELECT * FROM topics WHERE id=?',(id,))
-    if len(res)>0:
+    if res and len(res)>0:
         return Topic(**res[0])
     else:
         return None
@@ -86,9 +88,11 @@ def getAll(limit=-1):
     else:
         res = db.QUERY('SELECT * FROM topics')
     rlist = []
-    for values in res:
-        rlist.append(Topic(**values))
-    return rlist
+    if res:
+        for values in res:
+            rlist.append(Topic(**values))
+        return rlist
+    return None
     
 def getFiltered(filters={}, limit=-1,order_by=None,ascending=True):
     ''' Get a list of filtered Topics '''

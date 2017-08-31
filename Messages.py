@@ -76,7 +76,9 @@ def getCount(filters={}):
             query = query + key + '=?, '
         query = query[:-2]
     res = db.QUERY(query,tuple(values))
-    return res[0]['count']
+    if res:
+        return res[0]['count']
+    return 0
 
 def get(id=None):
     ''' Gets a Message given it's id
@@ -85,7 +87,7 @@ def get(id=None):
         return None
     
     res = db.QUERY('SELECT * FROM messages WHERE id=?',(id,))
-    if len(res)>0:
+    if res and len(res)>0:
         return Message(**res[0])
     else:
         return None
@@ -97,9 +99,11 @@ def getAll(limit=-1):
     else:
         res = db.QUERY('SELECT * FROM messages')
     rlist = []
-    for values in res:
-        rlist.append(Message(**values))
-    return rlist
+    if res:
+        for values in res:
+            rlist.append(Message(**values))
+        return rlist
+    return None
     
 def getFiltered(filters={}, limit=-1,order_by=None,ascending=True):
     ''' Get a list of filtered Messages '''
