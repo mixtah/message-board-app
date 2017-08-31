@@ -72,10 +72,12 @@ def getCount(filters={}):
     ''' Number of messages in the database given a number of filters'''
     keys = filters.keys()
     values = filters.values()
-    query = 'SELECT COUNT(*) AS count FROM messages WHERE '
-    for key in keys:
-        query = query + key + '=?, '
-    query = query[:-2]
+    query = 'SELECT COUNT(*) AS count FROM messages '
+    if len(keys)>0:
+        query = query + 'WHERE '
+        for key in keys:
+            query = query + key + '=?, '
+        query = query[:-2]
     res = db.QUERY(query,tuple(values))
     return res[0]['count']
 
@@ -107,10 +109,12 @@ def getFiltered(filters={}, limit=-1):
     
     keys = filters.keys()
     values = filters.values()
-    query = 'SELECT * FROM messages WHERE '
-    for key in keys:
-        query = query + key + '=?, '
-    query = query[:-2]
+    query = 'SELECT * FROM messages '
+    if len(keys)>0:
+        query = query + 'WHERE '
+        for key in keys:
+            query = query + key + '=?, '
+        query = query[:-2]
     if limit>0:
         res = db.QUERY(query + ' LIMIT ?',(limit))
     else:
