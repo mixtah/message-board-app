@@ -19,7 +19,7 @@
 				</tr>	
 				<tr>
 					<td>
-						<h3 style="color:#656565;text-align: center;"><i class="fa fa-user"></i> {{topic.username}}</h3>
+						<a href="/user/{{topic.username}}"><h3 style="color:#656565;text-align: center;"><i class="fa fa-user"></i> {{topic.username}}</h3></a>
 					</td>
 					<td>
 						<h4 style="color:#656565;text-align: center;"><i class="fa fa-clock-o"></i> {{datetime.datetime.strptime(topic.timestamp, '%Y-%m-%d %H:%M:%S').strftime('%A, %d %B %Y')}}</h4>
