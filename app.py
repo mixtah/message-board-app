@@ -12,6 +12,7 @@ Created on 28 Aug 2017
 
 import sys,os
 import socket
+import json
 import bottle
 from bottle import Bottle
 
@@ -57,7 +58,7 @@ def home():
     session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
     
     return bottle.template('page-home', 
-                           topics=Topics.getAll(limit=40),
+                           topics=Topics.getFiltered(limit=50, order_by='id',ascending=False),
                            alert=session.pop('alert',''))
 
 @app.route('/liked')
@@ -65,7 +66,7 @@ def liked():
     session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
     
     return bottle.template('page-home', 
-                           topics=Topics.getFiltered(limit=20, order_by='likes', ascending=False),
+                           topics=Topics.getFiltered(limit=25, order_by='likes', ascending=False),
                            alert=session.pop('alert',''))
 
 @app.route('/disliked')
@@ -73,7 +74,7 @@ def disliked():
     session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
     
     return bottle.template('page-home', 
-                           topics=Topics.getFiltered(limit=20, order_by='dislikes', ascending=False),
+                           topics=Topics.getFiltered(limit=25, order_by='dislikes', ascending=False),
                            alert=session.pop('alert',''))
 
 @app.route('/popular')
@@ -128,6 +129,42 @@ def topic(topic_id=''):
 #Delete  Topic  POST /topic/<topic-id:int>/delete
 #Like    Topic  POST /topic/<topic-id:int>/like
 #Dislike Topic  POST /topic/<topic-id:int>/dislike
+
+@app.get('/topic')
+def search_topics():
+    session = bottle.request.environ.get('beaker.session')  #@UndefinedVariable
+    
+    query = bottle.request.query
+    #Here we use pop because we want to remove the value from the query
+    limit = query.pop('limit',25)
+    order_by = query.pop('orderby','id')
+    ascending = query.pop('asc','FALSE').upper()=='TRUE' #To make sure this is a boolean
+    
+    #This is a trick to get the list of variables that
+    #exist within the Topic class.
+    allowed_query = Topics.Topic().__dict__.keys()
+    
+    for item in query:
+        #remove any unwanted query fields
+        if not query.get(item) in allowed_query:
+            query.pop(item)
+            
+    topics = Topics.getFiltered(query, limit=limit, order_by=order_by, ascending=ascending)
+    
+    #We're returning json
+    bottle.response.content_type = 'application/json'
+    
+    #We don't want to send back a json array, it must start with a key-value
+    #This is due to a subtle json vulnerability, read more on:
+    # http://haacked.com/archive/2009/06/25/json-hijacking.aspx/
+    # http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx/
+    res = {'results':[]}
+    
+    if topics:
+        for i in topics:
+                i = i.__dict__
+                res['results'].append(i)
+    return json.dumps(res)
 
 @app.post('/topic/add')
 def add_topic():

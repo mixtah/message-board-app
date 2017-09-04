@@ -17,7 +17,9 @@ def QUERY(query,params=None):
         @type query: str
         @param params: A tuple of parameters to be inserted into the query in
                     order to prevent SQLInjection
-        @return: 
+        @return: list of dictionaries, each dictionary containing keys as 
+                column names and values as the row value.
+        @rtype: list
     '''
     try:
         print query.replace('?','%s') % tuple(params)
@@ -26,12 +28,28 @@ def QUERY(query,params=None):
         
     try:
         conn = sqlite3.connect(DB_NAME)
-        cur = conn.cursor()        
-        if params==None:
-            cur.execute(query)
-        else:
-            cur.execute(query,params)
+        cur = conn.cursor()
         
+        #Hint: I would not normally do this, why not?
+        spl = query.split(';')
+        if len(spl)>1:
+            for q in spl:
+                if params:
+                    cur.execute(q,params)
+                    params = None
+                    conn.commit()
+                else:
+                    cur.execute(q)
+                    conn.commit()
+        else:
+            if params:
+                cur.execute(query,params)
+            else:
+                cur.execute(query)
+        
+        #Check if we were given a select statement
+        #If so we want to return the results,
+        #otherwise we want to return the last row that was updated
         if query.lstrip().lower().startswith('select'):
             result = []
             
@@ -57,6 +75,8 @@ def QUERY(query,params=None):
         print "Exception: ",err
         return None
     finally:
+        #Is run no matter what, even if there is an error.
+        #perfect place to close connections
         conn.close()
 
 def initialize_db():
