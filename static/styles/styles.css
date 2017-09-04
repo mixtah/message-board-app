@@ -4,7 +4,7 @@
 .comment-list .row {
   margin-bottom: 0px;
 }
-.comment-list .panel .panel-heading {
+.comment-list .panel .cpanel-heading {
   padding: 4px 15px;
   position: absolute;
   border:none;
@@ -18,7 +18,7 @@
   border-top-left-radius:0px;
   right: 16px;
 }
-.comment-list .panel .panel-heading .panel-body {
+.comment-list .panel .cpanel-heading .panel-body {
   padding-top: 6px;
 }
 .comment-list figcaption {

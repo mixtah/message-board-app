@@ -45,6 +45,21 @@
 			%messages = topic.getMessages()
 			%if messages:
 				%for message in messages:
+					<div class="modal fade" id="replyComment{{message.id}}" role="dialog">
+						<div class="modal-dialog modal-lg">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal">&times;</button>
+									<h4 class="modal-title">Add Reply</h4>
+								</div>
+								<div class="modal-body">
+									%include('comment-add',parent=message)
+								</div>
+								<div class="modal-footer">
+								</div>
+							</div>
+						</div>
+					</div>
 					<article class="row">
 			            <div class="col-md-2 col-sm-2 hidden-xs">
 			              <figure class="thumbnail">
@@ -73,21 +88,6 @@
 			                </div>
 			              </div>
 			            </div>
-			            <div class="modal fade" id="replyComment{{message.id}}" role="dialog">
-							<div class="modal-dialog modal-lg">
-								<div class="modal-content">
-									<div class="modal-header">
-										<button type="button" class="close" data-dismiss="modal">&times;</button>
-										<h4 class="modal-title">Add Reply</h4>
-									</div>
-									<div class="modal-body">
-										%include('comment-add',parent=message)
-									</div>
-									<div class="modal-footer">
-									</div>
-								</div>
-							</div>
-						</div>
 			        </article>
 			        %replies = message.getMessages()
 			        %if replies:
@@ -102,7 +102,7 @@
 					            </div>
 					            <div class="col-md-9 col-sm-9">
 					              <div class="panel panel-default arrow left">
-					                <div class="panel-heading right">Reply</div>
+					                <div class="panel-heading cpanel-heading right">Reply</div>
 					                <div class="panel-body">
 					                  <header class="text-left">
 					                    <div class="comment-user"><i class="fa fa-user"></i><a href="/user/{{message.username}}"> {{reply.username}}</a></div>
