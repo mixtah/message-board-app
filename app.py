@@ -136,7 +136,7 @@ def search_topics():
     
     query = bottle.request.query
     #Here we use pop because we want to remove the value from the query
-    limit = query.pop('limit',25)
+    limit = query.pop('limit',-1)
     order_by = query.pop('orderby','id')
     ascending = query.pop('asc','FALSE').upper()=='TRUE' #To make sure this is a boolean
     
@@ -144,7 +144,8 @@ def search_topics():
     #exist within the Topic class.
     allowed_query = Topics.Topic().__dict__.keys()
     
-    for item in query:
+    new_query = dict(query)
+    for item in new_query:
         #remove any unwanted query fields
         if not query.get(item) in allowed_query:
             query.pop(item)
