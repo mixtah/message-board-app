@@ -320,7 +320,4 @@ if __name__ == '__main__':
     #It will automatically find your ip address automatically and host
     #it on your local network.
     ip = socket.gethostbyname(socket.gethostname())
-    if not useSSL:
-        bottle.run(app=application, host=ip, port=8000, debug=True)
-    else:
-        bottle.run(app=application, host=ip, port=8000, debug=True,server=SSLCherryPyServer)
+    bottle.run(app=application, host=ip, port=8000, debug=True)
