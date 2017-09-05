@@ -17,9 +17,6 @@ import bottle
 from bottle import Bottle
 
 from beaker.middleware import SessionMiddleware
-from cherrypy import wsgiserver
-from cherrypy.wsgiserver.ssl_pyopenssl import pyOpenSSLAdapter
-from OpenSSL import SSL
 
 import Topics
 import Messages
@@ -277,46 +274,6 @@ def dislike_message(message_id=''):
     session['alert'] = "Failed to dislike Message, doesn't exist"
     bottle.redirect('/')
 
-###################################################################################
-### SSL 
-###################################################################################
-
-#I've included code to demonstrate that the bottle test server
-#can use SSL via CherryPy, you can make this true to secure your
-#users connection however you must generate a certificate, otherwise
-#the browser will complain that it's not actually secured.
-#
-#I encourage you to learn how to generate an SSL certificate after
-#this tutorial, and apply it.
-#
-#It's important to know that when hosting a webapp, you usually
-#wont need to bother with SSL at this level as you'd usually use
-#software like Nginx or Apache to server the webapp and it will handle
-#SSL for you.
-useSSL = False
-
-# By default, the server will allow negotiations with extremely old protocols
-# that are susceptible to attacks, so we only allow TLSv1.2
-class SecuredSSLServer(pyOpenSSLAdapter):
-    def get_context(self):
-        c = super(SecuredSSLServer, self).get_context()
-        c.set_options(SSL.OP_NO_SSLv2)
-        c.set_options(SSL.OP_NO_SSLv3)
-        c.set_options(SSL.OP_NO_TLSv1)
-        c.set_options(SSL.OP_NO_TLSv1_1)
-        return c
-
-# Create our own sub-class of Bottle's ServerAdapter
-# so that we can specify SSL. Using just server='cherrypy'
-# uses the default cherrypy server, which doesn't use SSL
-class SSLCherryPyServer(bottle.ServerAdapter):
-    def run(self, handler):
-        server = wsgiserver.CherryPyWSGIServer((self.host, self.port), handler)
-        server.ssl_adapter = SecuredSSLServer('keys/cacert.pem', 'keys/privkey.pem')
-        try:
-            server.start()
-        finally:
-            server.stop()
 
 
 ###################################################################################
