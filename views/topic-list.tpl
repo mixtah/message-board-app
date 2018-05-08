@@ -9,7 +9,7 @@
 	<div class="row">
 		%random.seed(topic.username+'topic'+str(topic.id))
 		%lorumCatagory = ['people','animals','cats','nightlife','technics','food','transport']
-		<img class="col-md-3 img-responsive" style="display: block;margin: auto;max-width:400px;" src="http://lorempixel.com/400/200/{{random.choice(lorumCatagory)}}/{{random.randint(0,10)}}">
+		<img class="col-md-3 img-responsive" style="display: block;margin: auto;max-width:400px;" src="https://loremflickr.com/400/400/{{random.choice(lorumCatagory)}}/?lock={{random.randint(0,100)}}">
 		<div class="col-md-9">
 			<table style="width:100%;">
 				<tr>
